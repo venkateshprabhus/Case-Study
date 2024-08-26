@@ -50,13 +50,13 @@ st.dataframe(Query08)
 st.write("09) What is the condition of occupied census houses(dilapidated, with separate kitchen, bathing facility, latrine facility) in each district?")
 st.dataframe(Query09)
 
-st.write("How is the household size distributed (1 person, 2 persons, 3-5 persons, etc.) in each district?")
+st.write("10) How is the household size distributed (1 person, 2 persons, 3-5 persons, etc.) in each district?")
 st.dataframe(Query10)
 
-st.write("What is the total number of households in each state?")
+st.write("11) What is the total number of households in each state?")
 st.dataframe(Query11)
 
-st.write("How many households have a latrine facility within the premises in each state?")
+st.write("12) How many households have a latrine facility within the premises in each state?")
 st.dataframe(Query12)
 
 st.write("13) What is the average household size in each state?")
