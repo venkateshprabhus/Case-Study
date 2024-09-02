@@ -1,0 +1,17 @@
+import json
+import boto3
+from botocore.exceptions import ClientError
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Post')
+
+def lambda_handler(event, context):
+    body = json.loads(event['body'])
+    Post_text = body.get('Post_text')
+    parts = Post_text.split()
+    
+    Hashtag = []
+    for p in parts:
+        if p.startswith('#'):
+            Hashtag.append(p.strip("#"))
+            
+    response = table.put_item(Item={'Post_text': Post_text,'Hashtag': ' '.join(Hashtag)})
