@@ -1,0 +1,54 @@
+~/.bashrc
+export DATA_URL="https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/cities/totals/sub-est2023.csv"
+export FILE_PATH="/opt/censusdata"
+export HDFS_PATH="/user/hive/warehouse/censusdata"
+export DATABASE_NAME="hivedb"
+export TABLE_NAME="cities"
+echo "success"
+
+vi shell.sh
+# Step 1: Download the data
+cd /opt
+mkdir censusdata
+wget "$DATA_URL" -O "$FILE_PATH/censusdata.csv"
+ls -lrt "$FILE_PATH/"
+echo "File Downloaded"
+
+# Step 2: Load the Data to HDFS
+hdfs dfs -mkdir /user/hive/warehouse/censusdata
+hdfs dfs -put "$FILE_PATH/censusdata.csv" "$HDFS_PATH/censusdata.csv"
+hdfs dfs -ls "$HDFS_PATH/"
+
+# Step 3: Create Hive database and table
+hive -e "
+CREATE DATABASE IF NOT EXISTS $DATABASE_NAME;
+USE $DATABASE_NAME;
+CREATE TABLE IF NOT EXISTS $TABLE_NAME (
+    SUMLEV INT,
+    STATE INT,
+    COUNTY INT,
+    PLACE INT,
+    COUSUB INT,
+    CONCIT INT,
+    PRIMGEO_FLAG INT,
+    FUNCSTAT STRING,
+    NAME STRING,
+    STNAME STRING,
+    ESTIMATESBASE2020 INT,
+    POPESTIMATE2020 INT,
+    POPESTIMATE2021 INT,
+    POPESTIMATE2022 INT,
+    POPESTIMATE2023 INT
+)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';"
+
+# Step 4: Verify the database and table
+hive -e "SHOW DATABASES;"
+hive -e "SHOW TABLES IN $DATABASE_NAME;"
+
+# Step 5: Load data into Hive table
+hive -e "LOAD DATA INPATH '$HDFS_PATH' INTO TABLE $DATABASE_NAME.$TABLE_NAME;"
+
+# Step 7: Verify data integrity
+hive -e "SELECT * FROM $DATABASE_NAME.$TABLE_NAME LIMIT 10;"
+
+echo "Data successfully loaded into Hive."
